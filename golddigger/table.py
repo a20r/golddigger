@@ -16,6 +16,8 @@ class DataTable(object):
         self.test_ids = list()
         self.group_inputs = [list() for _ in xrange(num_groups)]
         self.group_outputs = [list() for _ in xrange(num_groups)]
+        self.holdout_inputs = list()
+        self.holdout_outputs = list()
 
         with sqlite3.connect(self.db) as conn:
             cursor = conn.cursor()
@@ -25,23 +27,29 @@ class DataTable(object):
                 repeater = f_vector[1]
                 del f_vector[1]
                 del f_vector[0]
-                f_vector = map(self.float_or_none, f_vector)
                 self.inputs.append(f_vector)
                 self.outputs.append(repeater)
-                self.group_inputs[i % num_groups].append(f_vector)
-                self.group_outputs[i % num_groups].append(repeater)
+
+                if i % (num_groups + 1) == 0:
+                    self.holdout_inputs.append(f_vector)
+                    self.holdout_outputs.append(repeater)
+                else:
+                    self.group_inputs[i % num_groups].append(f_vector)
+                    self.group_outputs[i % num_groups].append(repeater)
 
             features_test = cursor.execute(self.test_query)
             for feature_vector in features_test:
                 f_vector = list(feature_vector)
-                f_vector = map(self.float_or_none, f_vector)
                 self.test_ids.append(f_vector[0])
                 self.test_inputs.append(f_vector[1:])
 
         return self
 
-    def float_or_none(self, v):
-        return float(v) if v else 0.0
+    def get_holdout_inputs(self):
+        return self.holdout_inputs
+
+    def get_holdout_outputs(self):
+        return self.holdout_outputs
 
     def get_all_training_inputs(self):
         return self.inputs
