@@ -18,6 +18,8 @@ class DataTable(object):
         self.group_outputs = [list() for _ in xrange(num_groups)]
         self.holdout_inputs = list()
         self.holdout_outputs = list()
+        self.unseen_inputs = list()
+        self.unseen_outputs = list()
 
         with sqlite3.connect(self.db) as conn:
             cursor = conn.cursor()
@@ -33,6 +35,9 @@ class DataTable(object):
                 if i % (num_groups + 1) == 0:
                     self.holdout_inputs.append(f_vector)
                     self.holdout_outputs.append(repeater)
+                elif i % (num_groups + 2) == 0:
+                    self.unseen_inputs.append(f_vector)
+                    self.unseen_outputs.append(repeater)
                 else:
                     self.group_inputs[i % num_groups].append(f_vector)
                     self.group_outputs[i % num_groups].append(repeater)
@@ -50,6 +55,12 @@ class DataTable(object):
 
     def get_holdout_outputs(self):
         return self.holdout_outputs
+
+    def get_unseen_inputs(self):
+        return self.unseen_inputs
+
+    def get_unseen_outputs(self):
+        return self.unseen_outputs
 
     def get_all_training_inputs(self):
         return self.inputs
