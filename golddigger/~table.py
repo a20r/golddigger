@@ -5,9 +5,9 @@ import sqlite3
 class DataTable(object):
 
     def __init__(self):
-        self.train_query = "select * from main.train"
-        self.test_query = "select * from main.test"
-        self.db = "data1/data.db"
+        self.train_query = "select * from main.features_train"
+        self.test_query = "select * from main.features_test"
+        self.db = "data/data.db"
 
     def load(self, num_groups=1):
         self.inputs = list()
@@ -26,8 +26,7 @@ class DataTable(object):
             features_train = cursor.execute(self.train_query)
             for i, feature_vector in enumerate(features_train):
                 f_vector = list(feature_vector)
-                repeater = f_vector[0]
-                del f_vector[2]
+                repeater = f_vector[1]
                 del f_vector[1]
                 del f_vector[0]
                 self.inputs.append(f_vector)
@@ -46,11 +45,8 @@ class DataTable(object):
             features_test = cursor.execute(self.test_query)
             for feature_vector in features_test:
                 f_vector = list(feature_vector)
-                self.test_ids.append(f_vector[2])
-                del f_vector[2]
-                del f_vector[1]
-                del f_vector[0]
-                self.test_inputs.append(f_vector)
+                self.test_ids.append(f_vector[0])
+                self.test_inputs.append(f_vector[1:])
 
         return self
 
