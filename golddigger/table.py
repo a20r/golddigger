@@ -20,6 +20,7 @@ class DataTable(object):
         self.holdout_outputs = list()
         self.unseen_inputs = list()
         self.unseen_outputs = list()
+        self.sample_weights = [list() for _ in xrange(num_groups)]
 
         with sqlite3.connect(self.db) as conn:
             cursor = conn.cursor()
@@ -27,6 +28,7 @@ class DataTable(object):
             for i, feature_vector in enumerate(features_train):
                 f_vector = list(feature_vector)
                 repeater = f_vector[0]
+                sw = f_vector[1]
                 del f_vector[2]
                 del f_vector[1]
                 del f_vector[0]
@@ -42,6 +44,7 @@ class DataTable(object):
                 else:
                     self.group_inputs[i % num_groups].append(f_vector)
                     self.group_outputs[i % num_groups].append(repeater)
+                    self.sample_weights[i % num_groups].append(sw)
 
             features_test = cursor.execute(self.test_query)
             for feature_vector in features_test:
