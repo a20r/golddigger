@@ -81,6 +81,9 @@ class DataTable(object):
     def get_training_outputs(self, group):
         return self.group_outputs[group]
 
+    def get_sample_weights(self, group):
+        return self.sample_weights[group]
+
     def get_test_inputs(self):
         return self.test_inputs
 

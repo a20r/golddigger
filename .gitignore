@@ -64,3 +64,4 @@ csv/
 output.csv
 *.bak
 .ropeproject/
+*.csv
